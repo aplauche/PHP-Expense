@@ -1,0 +1,18 @@
+{
+    "name": "anton/phpexpense",
+    "description": "A simple php expense tracker",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Anton Plauche",
+            "email": "antonplauche92@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Framework\\": "src/Framework",
+            "App\\": "src/App"
+        }
+    }
+}
