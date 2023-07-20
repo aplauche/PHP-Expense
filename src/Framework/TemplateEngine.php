@@ -21,12 +21,17 @@ class TemplateEngine
     // Output buffer is optional - allows the controller to manipulate content rendered before sending to browser
     ob_start();
 
-    include "{$this->basePath}/{$template}";
+    include $this->resolve($template);
 
     $output = ob_get_contents();
 
     ob_end_clean();
 
     return $output;
+  }
+
+  public function resolve(string $path)
+  {
+    return "{$this->basePath}/{$path}";
   }
 }
