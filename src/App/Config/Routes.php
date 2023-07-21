@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Config;
 
-use App\Controllers\AboutController;
 use Framework\App;
+use App\Controllers\AboutController;
 use App\Controllers\HomeController;
 
 function registerRoutes(App $app)

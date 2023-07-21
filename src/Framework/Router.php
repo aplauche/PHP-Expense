@@ -30,7 +30,7 @@ class Router
     return $path;
   }
 
-  public function dispatch(string $path, string $method)
+  public function dispatch(string $path, string $method, Container $container = null)
   {
     $path = $this->normalizePath($path);
     $method = strtoupper($method);
@@ -45,7 +45,7 @@ class Router
       [$class, $method] = $route['controller'];
 
       // you can instantiate a class using just a string with full namespace
-      $controllerInstance = new $class;
+      $controllerInstance = $container ? $container->resolve($class) : new $class;
 
       // you can run the method using a string as well
       $controllerInstance->$method();
