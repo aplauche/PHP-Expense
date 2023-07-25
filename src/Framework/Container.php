@@ -14,6 +14,7 @@ class Container
 {
 
   private array $definitions = [];
+  private array $resolved = [];
 
   public function addDefinitions(array $newDefinitions)
   {
@@ -86,9 +87,15 @@ class Container
       throw new ContainerException("Class {$id} does not exist in container definitions");
     }
 
+    if (array_key_exists($id, $this->resolved)) {
+      return $this->resolved[$id];
+    }
+
     $factoryFunction = $this->definitions[$id];
 
     $dependency = $factoryFunction();
+
+    $this->resolved[$id] = $dependency;
 
     return $dependency;
   }

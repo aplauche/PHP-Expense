@@ -36,6 +36,11 @@ class App
     $this->router->add('GET', $path, $controller);
   }
 
+  public function addMiddleware(string $middleware)
+  {
+    $this->router->addMiddleware($middleware);
+  }
+
   // public function addDefinitions(array $newDefinitions)
   // {
   //   $this->container->addDefinitions(($newDefinitions));

@@ -9,6 +9,7 @@ namespace Framework;
 class Router
 {
   private array $routes = [];
+  private array $middlewares = [];
 
   public function add(string $method, string $path, array $controller)
   {
@@ -45,10 +46,26 @@ class Router
       [$class, $method] = $route['controller'];
 
       // you can instantiate a class using just a string with full namespace
+      // check if we are using a container, if so intantiate class from container
       $controllerInstance = $container ? $container->resolve($class) : new $class;
 
-      // you can run the method using a string as well
-      $controllerInstance->$method();
+      // action is a function once run that will return the controller instance method
+      $action = fn () => $controllerInstance->{$method}();
+
+      // handle middlware - loop through invoking and passing the prev function into our process method
+      foreach ($this->middlewares as $middleware) {
+        $middlewareInstance = $container ? $container->resolve($middleware) : new $middleware;
+        $action = fn () => $middlewareInstance->process($action);
+      }
+      // finally after all other middleware our controller method is invoked
+      $action();
+
+      return;
     }
+  }
+
+  public function addMiddleware(string $middlware)
+  {
+    $this->middlewares[] = $middlware;
   }
 }
