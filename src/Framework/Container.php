@@ -14,7 +14,7 @@ class Container
 {
 
   private array $definitions = [];
-  private array $resolved = [];
+  private array $resolved = []; // store instance of already instantiated classes
 
   public function addDefinitions(array $newDefinitions)
   {
@@ -88,6 +88,7 @@ class Container
     }
 
     if (array_key_exists($id, $this->resolved)) {
+      // if the instance already exists, just return the already instantiated instance - SINGLETON
       return $this->resolved[$id];
     }
 
@@ -95,7 +96,9 @@ class Container
 
     $dependency = $factoryFunction();
 
+    // store the instance in the array of resolved
     $this->resolved[$id] = $dependency;
+
 
     return $dependency;
   }
