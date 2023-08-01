@@ -71,11 +71,11 @@ class Container
       if (!$type instanceof ReflectionNamedType || $type->isBuiltin()) {
         throw new ContainerException("Class {$class} has a param {$name} that is not a named type and cannot be resolved");
       }
-    }
 
-    // instantiate our dependencies from parameters
-    $paramTypeClassName = $type->getName();
-    $dependencies[] = $this->get($paramTypeClassName);
+      // instantiate our dependencies from parameters
+      $paramTypeClassName = $type->getName();
+      $dependencies[] = $this->get($paramTypeClassName);
+    }
 
     // this instantiates the class passing in the dependencies as arguments and returns it
     return $reflectionClass->newInstanceArgs($dependencies);
