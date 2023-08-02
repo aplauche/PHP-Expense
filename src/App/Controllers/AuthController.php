@@ -19,6 +19,7 @@ class AuthController
 
   public function registerView()
   {
+    // You could pass errors in here as third argument - but middlware is more elegant
     echo $this->view->render("register.php");
   }
 
