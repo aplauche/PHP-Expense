@@ -25,6 +25,16 @@ class Validator
     $errors = [];
     foreach ($fields as $fieldName => $rules) {
       foreach ($rules as $rule) {
+
+        // Pull out params seperated by colon and then split them up into array
+        $ruleParams = [];
+
+        if (str_contains($rule,  ":")) {
+          [$rule, $ruleParams] = explode(":", $rule);
+          $ruleParams = explode(',', $ruleParams);
+          dd($ruleParams);
+        }
+
         $ruleValidator = $this->rules[$rule];
         if ($ruleValidator->validate($formData, $fieldName, [])) {
           continue;
