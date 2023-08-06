@@ -12,7 +12,6 @@ function dd(mixed $value, bool $die = true)
   }
 }
 
-
 function e(mixed $value): string
 {
   return htmlspecialchars((string) $value);

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Inject global data we can use in any template
+ */
+
+
 declare(strict_types=1);
 
 

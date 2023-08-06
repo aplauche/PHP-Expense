@@ -6,7 +6,7 @@
     <!-- Email -->
     <label class="block">
       <span class="text-gray-700">Email address</span>
-      <input name="email" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="john@example.com" />
+      <input value="<?php echo $oldData['email'] ?? ''; ?>" name="email" type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="john@example.com" />
       <?php if (array_key_exists('email', $errors)) : ?>
         <div class="bg-gray-100 mt-2 p-2 text-red-500">
           <?php
@@ -19,7 +19,7 @@
     <!-- Age -->
     <label class="block">
       <span class="text-gray-700">Age</span>
-      <input name="age" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="" />
+      <input value="<?php echo $oldData['age'] ?? ''; ?>" name="age" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="" />
       <?php if (array_key_exists('age', $errors)) : ?>
         <div class="bg-gray-100 mt-2 p-2 text-red-500">
           <?php echo $errors['age'][0]; ?>
@@ -31,8 +31,8 @@
       <span class="text-gray-700">Country</span>
       <select name="country" class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
         <option value="USA">USA</option>
-        <option value="Canada">Canada</option>
-        <option value="Mexico">Mexico</option>
+        <option value="Canada" <?php echo $oldData['country'] === "Canada" ? "selected" : '' ?>>Canada</option>
+        <option value="Mexico" <?php echo $oldData['country'] === "Mexico" ? "selected" : '' ?>>Mexico</option>
         <option value="Invalid">Invalid Country</option>
       </select>
       <?php if (array_key_exists('country', $errors)) : ?>
@@ -44,7 +44,7 @@
     <!-- Social Media URL -->
     <label class="block">
       <span class="text-gray-700">Social Media URL</span>
-      <input name="socialMediaURL" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="" />
+      <input value="<?php echo $oldData['socialMediaURL'] ?? ''; ?>" name="socialMediaURL" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="" />
       <?php if (array_key_exists('socialMediaURL', $errors)) : ?>
         <div class="bg-gray-100 mt-2 p-2 text-red-500">
           <?php echo $errors['socialMediaURL'][0]; ?>

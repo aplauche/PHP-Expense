@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Check for a session, if none go ahead and create one so we can store data in the session variable
+ */
+
+
 declare(strict_types=1);
 
 
