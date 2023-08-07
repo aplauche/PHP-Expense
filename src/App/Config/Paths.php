@@ -10,4 +10,5 @@ class Paths
 {
   public const VIEW = __DIR__ . "/../views";
   public const SRC = __DIR__ . "/../../";
+  public const ROOT = __DIR__ . "/../../../";
 }
