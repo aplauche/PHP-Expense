@@ -94,7 +94,8 @@ class Container
 
     $factoryFunction = $this->definitions[$id];
 
-    $dependency = $factoryFunction();
+    // we pass the factory function $this so that we can manually add deps in the container defs too
+    $dependency = $factoryFunction($this);
 
     // store the instance in the array of resolved
     $this->resolved[$id] = $dependency;
