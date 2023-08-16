@@ -48,6 +48,11 @@ class UserService
         "social_media_url" => $formData["socialMediaURL"],
       ]
     );
+
+    // auto login after registering
+    session_regenerate_id();
+
+    $_SESSION['user'] = $this->db->lastId();
   }
 
   public function login(array $formData)
@@ -72,5 +77,13 @@ class UserService
 
     // assign the user ID to session
     $_SESSION['user'] = $user['id'];
+  }
+
+  public function logout()
+  {
+    // delete session
+    unset($_SESSION['user']);
+    // Regen ID as extra security precaution
+    session_regenerate_id();
   }
 }
