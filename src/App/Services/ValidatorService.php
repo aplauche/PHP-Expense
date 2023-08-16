@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use Framework\Validator;
-use Framework\Rules\{EmailRule, InRule, MatchRule, MinRule, RequiredRule, URLRule};
+use Framework\Rules\{DateFormatRule, EmailRule, InRule, MatchRule, MinRule, RequiredRule, URLRule, LengthMaxRule, NumericRule};
 
 class ValidatorService
 {
@@ -23,6 +23,9 @@ class ValidatorService
     $this->validator->add("in", new InRule());
     $this->validator->add("url", new URLRule());
     $this->validator->add("match", new MatchRule());
+    $this->validator->add("lengthMax", new LengthMaxRule());
+    $this->validator->add("numeric", new NumericRule());
+    $this->validator->add("dateFormat", new DateFormatRule());
   }
 
   public function validateRegister(array $formData)
@@ -49,9 +52,9 @@ class ValidatorService
   public function validateTransaction(array $formData)
   {
     $this->validator->validate($formData, [
-      "description" => ['required'],
-      "amount" => ['required'],
-      "date" => ['required'],
+      "description" => ['required', 'lengthMax:255'],
+      "amount" => ['required', 'numeric'],
+      "date" => ['required', 'dateFormat:Y-m-d'], // This format is how date gets submitted through POST
     ]);
   }
 }
