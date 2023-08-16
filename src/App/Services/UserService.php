@@ -49,4 +49,28 @@ class UserService
       ]
     );
   }
+
+  public function login(array $formData)
+  {
+    // get user with matching email
+    $user = $this->db->query(
+      "SELECT * FROM users WHERE email = :email",
+      ['email' => $formData['email']]
+    )->find();
+
+    // compare submitted password with hashed pw in database using password_verify function
+    $passwordsMatch = password_verify($formData['password'], $user['password'] ?? '');
+
+    if (!$user || !$passwordsMatch) {
+      // pass in our own custom error message to not reveal anything about which field failed
+      throw new ValidationException(['password' => ['invalid credentials']]);
+    }
+
+    // this refreshes session so hackers cannot use old hijacked cookies
+    // change it on every login
+    session_regenerate_id();
+
+    // assign the user ID to session
+    $_SESSION['user'] = $user['id'];
+  }
 }

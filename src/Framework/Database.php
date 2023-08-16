@@ -22,7 +22,10 @@ class Database
 
     // we need to use a custom error to make sure sensitive info does not get dumped
     try {
-      $this->connection = new PDO($dsn, $username, $password);
+      $this->connection = new PDO($dsn, $username, $password, [
+        // add default mode
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+      ]);
     } catch (PDOException $e) {
       die("Error connecting to database.");
     }
@@ -40,5 +43,10 @@ class Database
   public function count()
   {
     return $this->stmt->fetchColumn(0);
+  }
+
+  public function find()
+  {
+    return $this->stmt->fetch();
   }
 }

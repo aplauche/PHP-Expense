@@ -16,7 +16,8 @@ class Router
     $this->routes[] = [
       'path' => $this->normalizePath($path),
       'method' => strtoupper($method),
-      'controller' => $controller
+      'controller' => $controller,
+      'middlewares' => []
     ];
   }
 
@@ -52,8 +53,10 @@ class Router
       // action is a function once run that will return the controller instance method
       $action = fn () => $controllerInstance->{$method}();
 
+      $allMiddleware = [...$route['middlewares'], ...$this->middlewares];
+
       // handle middlware - loop through invoking and passing the prev function into our process method
-      foreach ($this->middlewares as $middleware) {
+      foreach ($allMiddleware as $middleware) {
         $middlewareInstance = $container ? $container->resolve($middleware) : new $middleware;
         $action = fn () => $middlewareInstance->process($action);
       }
@@ -67,5 +70,12 @@ class Router
   public function addMiddleware(string $middlware)
   {
     $this->middlewares[] = $middlware;
+  }
+
+  public function addRouteMiddleware(string $middleware)
+  {
+    $lastRouteKey = array_key_last($this->routes);
+    //dd($this->routes[$lastRouteKey]);
+    $this->routes[$lastRouteKey]['middlewares'][] = $middleware;
   }
 }
