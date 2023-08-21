@@ -6,6 +6,7 @@ use Framework\TemplateEngine;
 use App\Config\Paths;
 use App\Services\UserService;
 use App\Services\ValidatorService;
+use App\Services\TransactionService;
 use Framework\Database;
 use Framework\Container;
 
@@ -21,6 +22,10 @@ return [
   },
   ValidatorService::class => function () {
     return new ValidatorService();
+  },
+  TransactionService::class => function (Container $container) {
+    $db = $container->get(Database::class);
+    return new TransactionService($db);
   },
   Database::class => function () {
     return new Database($_ENV['DB_DRIVER'], [
