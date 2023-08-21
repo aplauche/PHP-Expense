@@ -31,9 +31,15 @@ class TransactionService
 
   public function getUserTransactions()
   {
+
+    $searchTerm = $_GET['s'] ?? '';
+
+    // escape percent and unerscore to prevent errors with the LIKE clause
+    $searchTerm = addcslashes($searchTerm, '%_');
+
     $transactions = $this->db->query(
-      "SELECT *, DATE_FORMAT(date, '%Y-%m-%d') as formatted_date FROM transactions WHERE user_id = :user_id",
-      ["user_id" => $_SESSION['user']]
+      "SELECT *, DATE_FORMAT(date, '%Y-%m-%d') as formatted_date FROM transactions WHERE user_id = :user_id AND description LIKE :description",
+      ["user_id" => $_SESSION['user'], "description" => "%{$searchTerm}%"]
     )->findAll();
 
     return $transactions;
