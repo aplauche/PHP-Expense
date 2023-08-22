@@ -13,11 +13,19 @@ class Router
 
   public function add(string $method, string $path, array $controller)
   {
+
+    $path = $this->normalizePath($path);
+    // creates a path with the secondary regex expression within it for an route params
+    // /transaction/{transaction} => /transaction/([^/]+)/
+    $regexPath = preg_replace('#{[^/]+}#', '([^/]+)', $path);
+
+
     $this->routes[] = [
       'path' => $this->normalizePath($path),
       'method' => strtoupper($method),
       'controller' => $controller,
-      'middlewares' => []
+      'middlewares' => [],
+      'regexPath' => $regexPath
     ];
   }
 
@@ -38,10 +46,23 @@ class Router
     $method = strtoupper($method);
 
     foreach ($this->routes as $route) {
-      if (!preg_match("#^{$route['path']}$#", $path) || $route["method"] !== $method) {
+      // evaluates regex path which includes a placeholder for any value for the params without curly brackets eg. /transaction/([^/]+)/ matches /transaction/1/
+      // adding third argument to preg_match capture matches in groups and stores them in an array
+      if (!preg_match("#^{$route['regexPath']}$#", $path, $paramValues) || $route["method"] !== $method) {
         // Route not found
         continue; // move to next item in array
       }
+
+      // remove first item from match array - this will always be the full path
+      array_shift($paramValues);
+
+      // get the name of placeholders from our route definition to use as keys
+      preg_match_all('#{([^/]+)}#', $route['path'], $paramKeys);
+
+      // only use the secondary item returned - since first will always be full match with curly brackets
+      $paramKeys = $paramKeys[1];
+
+      $params = array_combine($paramKeys, $paramValues);
 
       // destructure out our controller namespace and method
       [$class, $method] = $route['controller'];
@@ -51,7 +72,7 @@ class Router
       $controllerInstance = $container ? $container->resolve($class) : new $class;
 
       // action is a function once run that will return the controller instance method
-      $action = fn () => $controllerInstance->{$method}();
+      $action = fn () => $controllerInstance->{$method}($params);
 
       $allMiddleware = [...$route['middlewares'], ...$this->middlewares];
 
