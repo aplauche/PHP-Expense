@@ -29,7 +29,7 @@ class TransactionService
     );
   }
 
-  public function getUserTransactions()
+  public function getUserTransactions(int $length, int $offset)
   {
 
     $searchTerm = $_GET['s'] ?? '';
@@ -37,11 +37,26 @@ class TransactionService
     // escape percent and unerscore to prevent errors with the LIKE clause
     $searchTerm = addcslashes($searchTerm, '%_');
 
+    $params = ["user_id" => $_SESSION['user'], "description" => "%{$searchTerm}%"];
+
     $transactions = $this->db->query(
-      "SELECT *, DATE_FORMAT(date, '%Y-%m-%d') as formatted_date FROM transactions WHERE user_id = :user_id AND description LIKE :description",
-      ["user_id" => $_SESSION['user'], "description" => "%{$searchTerm}%"]
+      "SELECT *, DATE_FORMAT(date, '%Y-%m-%d') as formatted_date 
+      FROM transactions WHERE user_id = :user_id 
+      AND description LIKE :description
+      LIMIT {$length} OFFSET {$offset}",
+      $params
     )->findAll();
 
-    return $transactions;
+    $transactionCount = $this->db->query(
+      "SELECT COUNT(*)
+      FROM transactions WHERE user_id = :user_id 
+      AND description LIKE :description",
+      $params
+    )->count();
+
+    return [
+      "transactions" => $transactions,
+      "transactionCount" => $transactionCount
+    ];
   }
 }

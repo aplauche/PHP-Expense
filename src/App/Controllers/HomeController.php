@@ -17,10 +17,34 @@ class HomeController
 
   public function home()
   {
-    $transactions = $this->transactionService->getUserTransactions();
+
+    $page = $_GET['p'] ?? 1;
+    // make sure it is a number
+    $page = (int) $page;
+    // TODO: add control of length to page
+    $length = 3;
+    $offset = ($page - 1) * $length;
+
+    $searchTerm = $_GET['s'] ?? null;
+
+
+    $results = $this->transactionService->getUserTransactions(
+      $length,
+      $offset
+    );
+
+    $transactions = $results['transactions'];
+    $count = $results['transactionCount'];
+
+    $lastPage = ceil($count / $length);
 
     echo $this->view->render("index.php", [
-      'transactions' => $transactions
+      'transactions' => $transactions,
+      'currentPage' => $page,
+      // if an item has null value it will be excluded from query
+      'previousPageQuery' => http_build_query(['s' => $searchTerm, 'p' => $page - 1]),
+      'lastPage' => $lastPage,
+      'nextPageQuery' => http_build_query(['s' => $searchTerm, 'p' => $page + 1])
     ]);
   }
 }
