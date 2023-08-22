@@ -38,13 +38,27 @@ class HomeController
 
     $lastPage = ceil($count / $length);
 
+    // create an array of page numbers
+    $pages = $lastPage ? range(1, $lastPage) : [];
+
+    // transfrom to query params
+    $pageLinks = array_map(
+      fn ($num) => http_build_query([
+        's' => $searchTerm,
+        'p' => $num
+      ]),
+      $pages
+    );
+
     echo $this->view->render("index.php", [
       'transactions' => $transactions,
       'currentPage' => $page,
       // if an item has null value it will be excluded from query
       'previousPageQuery' => http_build_query(['s' => $searchTerm, 'p' => $page - 1]),
       'lastPage' => $lastPage,
-      'nextPageQuery' => http_build_query(['s' => $searchTerm, 'p' => $page + 1])
+      'nextPageQuery' => http_build_query(['s' => $searchTerm, 'p' => $page + 1]),
+      'pageLinks' => $pageLinks,
+      'searchTerm' => $searchTerm
     ]);
   }
 }
