@@ -29,6 +29,14 @@ class TransactionService
     );
   }
 
+  public function getUserTransaction(string $id)
+  {
+    return $this->db->query(
+      "SELECT *, DATE_FORMAT(date, '%Y-%m-%d') as formatted_date FROM transactions WHERE id = :id AND user_id = :user_id",
+      ["id" => $id, 'user_id' => $_SESSION['user']]
+    )->find();
+  }
+
   public function getUserTransactions(int $length, int $offset)
   {
 
@@ -58,5 +66,24 @@ class TransactionService
       "transactions" => $transactions,
       "transactionCount" => $transactionCount
     ];
+  }
+
+  public function update(array $formData, int $id)
+  {
+
+    $formattedDate = "{$formData['date']} 00:00:00";
+
+    $this->db->query(
+      "UPDATE transactions
+      SET description = :description, amount = :amount, date = :date
+      WHERE id = :id AND user_id = :user_id",
+      [
+        "description" => $formData['description'],
+        "amount" => $formData['amount'],
+        "date" => $formattedDate,
+        "id" => $id,
+        "user_id" => $_SESSION['user'],
+      ]
+    );
   }
 }
