@@ -22,12 +22,6 @@ $sqlFile = file_get_contents("./database.sql");
 
 try {
   $db->connection->query($sqlFile);
-  $query = "SELECT * FROM products WHERE name=:name";
-  $stmt = $db->connection->prepare($query);
-  $stmt->execute([
-    "name" => 'gloves'
-  ]);
-  var_dump($stmt->fetchAll(PDO::FETCH_ASSOC));
 } catch (PDOException $e) {
   die('Connection failed.');
 }

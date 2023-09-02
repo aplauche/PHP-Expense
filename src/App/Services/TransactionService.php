@@ -42,9 +42,10 @@ class TransactionService
 
     $searchTerm = $_GET['s'] ?? '';
 
-    // escape percent and unerscore to prevent errors with the LIKE clause
+    // escape percent and unerscore to prevent errors with the LIKE clause for search
     $searchTerm = addcslashes($searchTerm, '%_');
 
+    // fetch transactions that match search term AND belong to user
     $params = ["user_id" => $_SESSION['user'], "description" => "%{$searchTerm}%"];
 
     $transactions = $this->db->query(
@@ -55,6 +56,18 @@ class TransactionService
       $params
     )->findAll();
 
+
+    // Iterate over transaction results and query for receipts related to each
+    $transactions = array_map(function (array $transaction) {
+      $transaction['receipts'] = $this->db->query(
+        "SELECT * FROM receipts WHERE transaction_id=:transaction_id",
+        ["transaction_id" => $transaction['id']]
+      )->findAll();
+
+      return $transaction;
+    }, $transactions);
+
+    // Run a seperate query to get our count for pagination logic
     $transactionCount = $this->db->query(
       "SELECT COUNT(*)
       FROM transactions WHERE user_id = :user_id 
@@ -71,6 +84,7 @@ class TransactionService
   public function update(array $formData, int $id)
   {
 
+    // Mysql expects a datetime object, but we just have date
     $formattedDate = "{$formData['date']} 00:00:00";
 
     $this->db->query(

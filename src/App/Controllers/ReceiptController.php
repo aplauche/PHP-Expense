@@ -38,8 +38,58 @@ class ReceiptController
     $receiptFile = $_FILES['receipt'] ?? null;
 
     $this->receiptService->validateFile($receiptFile);
-    $this->receiptService->upload($receiptFile);
+    $this->receiptService->upload($receiptFile, $transaction['id']);
 
     redirectTo("/");
+  }
+
+  public function download(array $params)
+  {
+    // Check to make sure transaction in url exists
+    $transaction = $this->transactionService->getUserTransaction($params['transaction']);
+
+    if (!$transaction) {
+      redirectTo("/");
+    }
+
+    // Check to make sure receipt in url exists
+    $receipt = $this->receiptService->getReceipt($params['receipt']);
+
+    if (!$receipt) {
+      redirectTo("/");
+    }
+
+    // make sure receipt is actually associated with this transaction
+    if ($receipt["transaction_id"] !== $transaction["id"]) {
+      redirectTo('/');
+    }
+
+    $this->receiptService->read($receipt);
+  }
+
+  public function delete(array $params)
+  {
+    // Check to make sure transaction in url exists
+    $transaction = $this->transactionService->getUserTransaction($params['transaction']);
+
+    if (!$transaction) {
+      redirectTo("/");
+    }
+
+    // Check to make sure receipt in url exists
+    $receipt = $this->receiptService->getReceipt($params['receipt']);
+
+    if (!$receipt) {
+      redirectTo("/");
+    }
+
+    // make sure receipt is actually associated with this transaction
+    if ($receipt["transaction_id"] !== $transaction["id"]) {
+      redirectTo('/');
+    }
+
+    $this->receiptService->delete($receipt);
+
+    redirectTo('/');
   }
 }

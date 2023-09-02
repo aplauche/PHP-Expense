@@ -11,7 +11,7 @@ use App\Config\Paths;
 class ReceiptService
 {
 
-  public function __construct(private Database $database)
+  public function __construct(private Database $db)
   {
   }
 
@@ -59,7 +59,7 @@ class ReceiptService
     }
   }
 
-  function upload(array $file)
+  function upload(array $file, int $transaction)
   {
 
     // Generate a random filename to make sure overrides do not accidently happen
@@ -83,5 +83,65 @@ class ReceiptService
         'receipt' => ['Your file was not successfully uploaded.']
       ]);
     }
+
+    $this->db->query(
+      "INSERT INTO receipts(transaction_id, original_filename, storage_filename, media_type)
+      VALUES(:transaction_id, :original_filename, :storage_filename, :media_type)",
+      [
+        'transaction_id' => $transaction,
+        'original_filename' => $file["name"],
+        'storage_filename' => $newFileName,
+        'media_type' => $file['type'],
+      ]
+    );
+  }
+
+  public function getReceipt(string $id)
+  {
+    $receipt = $this->db->query(
+      "SELECT * FROM receipts WHERE id=:id",
+      ['id' => $id]
+    )->find();
+
+    return $receipt;
+  }
+
+
+  public function read(array $receipt)
+  {
+
+    // check if file actually exists
+    $filePath = Paths::STORAGE_UPLOADS . "/" . $receipt["storage_filename"];
+
+    if (!file_exists($filePath)) {
+      redirectTo('/');
+    }
+
+    // tell browser to send non-html file with headers
+
+    // there are two value options: inline will try to render the file, attachment will auto download
+    header("Content-Disposition: inline;filename={$receipt['original_filename']}");
+    header("Content-Type: {$receipt['media_type']}");
+
+    readfile($filePath);
+  }
+
+  public function delete(array $receipt)
+  {
+    // check if file actually exists
+    $filePath = Paths::STORAGE_UPLOADS . "/" . $receipt["storage_filename"];
+
+    if (!file_exists($filePath)) {
+      redirectTo('/');
+    }
+
+    // This deletes the actual file
+    unlink($filePath);
+
+    // delete the db record
+    $this->db->query(
+      "DELETE FROM receipts WHERE id=:id",
+      ["id" => $receipt['id']]
+    );
   }
 }
