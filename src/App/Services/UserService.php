@@ -81,9 +81,32 @@ class UserService
 
   public function logout()
   {
-    // delete session
-    unset($_SESSION['user']);
+    /* 
+    METHOD 1
+    // unset can seletivley delete session data
+    unset($_SESSION['user']); 
     // Regen ID as extra security precaution
     session_regenerate_id();
+    */
+
+    /*
+    METHOD 2
+    Deletes everything, full session and cookie in browser
+    */
+
+    // delete session
+    session_destroy();
+
+    // we can also delete the browser cookie as well
+    $params = session_get_cookie_params(); // grab current cookie info
+    setcookie(
+      "PHPSESSID",
+      "",
+      time() - 3600, // expiration to time in the past
+      $params['path'],
+      $params['domain'],
+      $params['secure'],
+      $params['httponly']
+    );
   }
 }
