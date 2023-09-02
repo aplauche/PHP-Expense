@@ -7,6 +7,7 @@ use App\Config\Paths;
 use App\Services\UserService;
 use App\Services\ValidatorService;
 use App\Services\TransactionService;
+use App\Services\ReceiptService;
 use Framework\Database;
 use Framework\Container;
 
@@ -22,6 +23,10 @@ return [
   },
   ValidatorService::class => function () {
     return new ValidatorService();
+  },
+  ReceiptService::class => function (Container $container) {
+    $db = $container->get(Database::class);
+    return new ReceiptService($db);
   },
   TransactionService::class => function (Container $container) {
     $db = $container->get(Database::class);
